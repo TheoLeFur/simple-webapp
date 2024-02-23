@@ -7,6 +7,7 @@ import scala.concurrent.duration.Duration
 import cs214.webapp.*
 import cs214.webapp.server.WebServer
 
+
 abstract class WebappTest[Event, State, View] extends munit.FunSuite:
   protected val UID0: String = "yak"
   protected val UID1: String = "hut"

@@ -40,6 +40,9 @@ enum StateView:
   case Finished(winnerIds: Set[UserId])
 
 enum PhaseView:
+
+  /// The Memory Game can be decomposed into mutliple phases
+
   /** It's our turn to pick two cards. */
   case SelectingCards
 
@@ -71,4 +74,46 @@ enum MemoryEvent:
   /** Flips selected cards. */
   case FlipSelected
 
-type MemoryState = Unit // Change this!
+enum MemoryState:
+  /** @param board
+    *   : board representing the memory game
+    * @param lastPlayer
+    *   : user id of the last player
+    * @param phase
+    *   : view on the phase of the game
+    * @param scores
+    *   : mapping between userIds and scores
+    * @param firstCard
+    *   : optional first card selected by the player
+    * @param secondCard
+    *   : optional second card selected by the player
+    */
+
+  
+  /// The game is not finished, we store all the relevant information used to make a decision about
+  /// state change
+  case InGame(
+      board: MemoryBoard,
+      phase: PhaseView,
+      scores: Map[UserId, Seq[Card]],
+      selectedCards : Seq[Int],
+      clients : Seq[UserId],
+      clientId : Int
+  )
+
+  /// The game is finished, we display the winners and the scores of the users
+
+  case OutofGame(winnerIds: Set[UserId], scores : ScoresView)
+
+/// The memory board stores the sequence of cards along with their view, and the remaining number of cards
+/// before the end of the game, thus letting the game end whenever nRemaining == 0. 
+case class MemoryBoard(board: Seq[(Card, CardView)], nRemaining: Int):
+
+  def updateBoard(
+      card: (Card, Int),
+      cardView: CardView,
+      remaining: Int
+  ): MemoryBoard =
+    val cardValue = card._1
+    val cardId = card._2
+    MemoryBoard(this.board.updated(cardId, (cardValue, cardView)), remaining)
